@@ -87,18 +87,20 @@ No UDP não existe `accept()`. O endereço do cliente vem em cada pacote, então
 
 ## Parte C — Multicast
 
-> **Nota de ambiente:** _(descrever aqui qual `NetworkInterface` funcionou no
-> macOS e o que precisou ser ajustado em relação ao código original do roteiro)_
+> **Nota de ambiente (adaptacoes para macOS):**
+>
+> 1. **Interface de rede:** o `ClienteMulticast.java` procura automaticamente uma interface ativa com suporte a multicast, em vez de usar diretamente `NetworkInterface.getByInetAddress(InetAddress.getLocalHost())`. Na minha máquina, a interface escolhida foi a `en0`.
+> 2. **`SO_REUSEPORT` no Python:** foi necessário habilitar essa opção para permitir mais de um cliente usando a mesma porta. Sem ela, o segundo cliente dava `OSError: [Errno 48] Address already in use`.
 
 ### 1. Qual é a diferença fundamental entre enviar a mesma mensagem para 3 clientes usando unicast repetido 3 vezes e enviar uma única vez via multicast? Pense em termos de tráfego de rede.
 
-_(escrever)_
+No multicast, o servidor enviou cada aviso uma única vez e os dois clientes receberam. Em unicast, seria necessário enviar uma cópia para cada cliente. Com N clientes, seriam N cópias na rede.
 
 ---
 
 ### 2. O que é o TTL (time-to-live) configurado no socket multicast e por que ele é importante para controlar o alcance dos pacotes na rede?
 
-_(escrever)_
+O `TTL = 1` limita até onde o pacote multicast pode chegar. Com esse valor, ele fica restrito à rede local e não atravessa roteadores.
 
 ---
 
@@ -106,12 +108,11 @@ _(escrever)_
 
 **O que observei:**
 
-_(derrubar um cliente durante o envio dos 5 avisos, subir de novo e verificar se
-ele recebe os que perdeu)_
+Derrubei o Aluno-2 com `Ctrl+C` logo depois do Aviso 2 e subi o cliente de novo em seguida. Ele entrou no grupo normalmente, mas os avisos 3, 4 e 5 — publicados durante e logo após a ausência — não chegaram para ele. O Aluno-1, que ficou o tempo todo no grupo, recebeu os cinco. Evidência em `evidencias/multicast/multicast-reentrada.png`.
 
 **Explicação:**
 
-_(escrever)_
+Quem sai do grupo perde as mensagens enviadas enquanto estava fora. Quando volta, só recebe as próximas, porque não existe nenhum servidor armazenando o histórico para entregar depois.
 
 ---
 
