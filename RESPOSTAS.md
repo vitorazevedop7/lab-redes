@@ -118,23 +118,28 @@ Quem sai do grupo perde as mensagens enviadas enquanto estava fora. Quando volta
 
 ## Parte D — WebSocket
 
+> **Nota de ambiente (adaptacao para macOS):** o `pip3 install websockets` foi
+> recusado com `error: externally-managed-environment`, porque o Python instalado
+> via Homebrew nao permite instalacao direta no ambiente global. A biblioteca foi
+> entao instalada em um ambiente virtual criado dentro de `python/websocket`
+> (`python3 -m venv .venv`), que precisa estar ativo em cada terminal antes de
+> rodar o servidor ou os clientes. A pasta `.venv/` esta no `.gitignore`.
+
 ### 1. O WebSocket começa com uma requisição HTTP contendo o cabeçalho `Upgrade: websocket`. O que exatamente "muda" na conexão depois que esse handshake é concluído?
 
-_(escrever)_
+O WebSocket começa com um handshake em `ws://localhost:8969` e depois mantém uma conexão bidirecional contínua. Diferente do HTTP tradicional, o servidor pode enviar mensagens a qualquer momento, sem o cliente precisar fazer uma nova requisição.
 
 ---
 
 ### 2. Compare o mural via WebSocket (Parte D) com o aviso via Multicast (Parte C). Ambos entregam uma mensagem a vários destinatários — qual a diferença na forma como cada um descobre e alcança os destinatários?
 
-_(escrever — dica: comparar o `getConnections()` do servidor Java da Parte D com
-o `joinGroup()` do cliente da Parte C. Quem mantém a lista de destinatários em
-cada caso?)_
+No WebSocket, o servidor sabe quais clientes estão conectados e mantém essa lista, usando `getConnections()` no Java ou um `set` no Python. Já no multicast, o servidor apenas envia para o endereço do grupo, sem saber quem está ouvindo; é o cliente que entra no grupo com `joinGroup`.
 
 ---
 
 ### 3. Por que o WebSocket é mais adequado do que TCP "cru" (como o da Parte A) para este cenário de mural em tempo real, mesmo os dois sendo, no fundo, conexões TCP contínuas?
 
-_(escrever)_
+No TCP da Parte A, o servidor tratava um cliente por vez e o cliente enviava uma mensagem e esperava resposta. No WebSocket, vários clientes permanecem conectados ao mesmo tempo e o servidor pode mandar avisos para eles sem que tenham feito uma solicitação antes.
 
 ---
 
