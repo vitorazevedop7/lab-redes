@@ -61,27 +61,27 @@ Para suportar vários clientes, o `accept()` teria que estar dentro de um laço 
 
 **O que observei em Java:**
 
-_(descrever: travou? deu erro? seguiu normalmente?)_
+O cliente imprimiu `[UDP] Datagrama enviado (o send() nao garante entrega).` normalmente e, três segundos depois, `[UDP] Nenhuma resposta em 3s.` Nenhuma exceção foi lançada e o programa voltou ao prompt, pronto para enviar outra mensagem.
 
 **O que observei em Python:**
 
-_(descrever)_
+Comportamento idêntico: `[UDP] Datagrama enviado (o sendto() não garante entrega).` seguido de `[UDP] Nenhuma resposta em 3s.` O cliente continuou rodando normalmente.
 
 **Comparação com TCP e explicação:**
 
-_(escrever)_
+No UDP, Java e Python enviaram o datagrama normalmente e depois deram timeout de 3s. Isso acontece porque o UDP não tem handshake. Já no TCP, o cliente falha no `connect()`, com `ConnectException` ou `ConnectionRefusedError`, antes de enviar qualquer dado. O timeout de 3s foi definido no código, não pelo protocolo.
 
 ---
 
 ### 2. Cite dois exemplos de aplicações reais que usam UDP e explique, para cada uma, por que a confiabilidade do TCP não é essencial (ou até atrapalharia).
 
-_(escrever)_
+Em chamadas de voz, retransmitir um pacote atrasado não ajuda, porque aquele trecho do áudio já passou. Em jogos online acontece o mesmo com posições antigas. Nesses casos, perder um dado é melhor do que aumentar a latência.
 
 ---
 
 ### 3. No código, o servidor UDP não mantém nenhum registro de "quem está conectado". Isso seria possível de implementar? O que mudaria na arquitetura da aplicação?
 
-_(escrever)_
+No UDP não existe `accept()`. O endereço do cliente vem em cada pacote, então o servidor consegue atender vários clientes diretamente. Para manter uma lista de "conectados", seria preciso usar timeout de inatividade ou heartbeat. Esse controle deixa de ser da camada de transporte e passa a ser responsabilidade da aplicação.
 
 ---
 
