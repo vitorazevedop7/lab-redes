@@ -142,7 +142,3 @@ No WebSocket, o servidor sabe quais clientes estão conectados e mantém essa li
 No TCP da Parte A, o servidor tratava um cliente por vez e o cliente enviava uma mensagem e esperava resposta. No WebSocket, vários clientes permanecem conectados ao mesmo tempo e o servidor pode mandar avisos para eles sem que tenham feito uma solicitação antes.
 
 ---
-
-## Exercícios extras realizados
-
-_(opcional — registrar aqui o teste cruzado da Parte C, Java↔Python, se funcionar)_
