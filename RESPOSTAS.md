@@ -14,18 +14,30 @@
 
 **O que observei:**
 
-_(rodar o cliente sem o servidor no ar e colar aqui a mensagem de erro exata,
-tanto em Java quanto em Python)_
+No Java apareceu o erro `java.net.ConnectException: Connection refused` na linha 13, quando tenta criar o `new Socket`. No Python aconteceu praticamente a mesma coisa, dando `ConnectionRefusedError: [Errno 61]` na hora do `connect()`.
+
+```
+Exception in thread "main" java.net.ConnectException: Connection refused
+        at java.base/java.net.Socket.<init>(Socket.java:324)
+        at ClienteTCP.main(ClienteTCP.java:13)
+```
+
+```
+Traceback (most recent call last):
+  File ".../python/tcp/cliente_tcp.py", line 10, in <module>
+    cliente.connect((HOST, PORTA))
+ConnectionRefusedError: [Errno 61] Connection refused
+```
 
 **Explicação:**
 
-_(escrever)_
+Os dois nem chegaram a mandar mensagem. Isso aconteceu porque não tinha nenhum servidor escutando na porta 5081, então o sistema operacional da máquina de destino recusou a conexão. Como o TCP é orientado a conexão, nada é enviado antes do handshake ser concluído — por isso a falha apareceu já no `connect()`, e não na hora do envio.
 
 ---
 
 ### 2. O TCP garante que as mensagens cheguem na ordem em que foram enviadas. Qual mecanismo do protocolo é responsável por isso?
 
-_(escrever)_
+Essa questão é mais conceitual, então não teve teste no código. O TCP usa números de sequência nos segmentos para conseguir identificar a ordem correta dos dados. Assim, mesmo que eles cheguem fora de ordem, o destino consegue organizar tudo antes de entregar a informação. Além disso, o receptor confirma o recebimento com ACKs e o remetente retransmite o que não for confirmado: os números de sequência sozinhos ordenam, mas é o conjunto sequência + ACK + retransmissão que garante a entrega ordenada e completa.
 
 ---
 
@@ -33,12 +45,13 @@ _(escrever)_
 
 **O que observei:**
 
-_(abrir um segundo cliente enquanto o primeiro está conectado e descrever o que
-acontece)_
+O cliente 2 mostrou `Conectado`, conseguiu mandar `oi`, mas depois ficou travado esperando uma resposta que não veio. No servidor apareceu somente `Recebido: ola`, que era a mensagem do cliente 1. Ou seja: o cliente 2 não recebeu erro nenhum, ele simplesmente ficou bloqueado.
 
 **Justificativa no código:**
 
-_(apontar a linha do servidor que explica o comportamento)_
+Olhando o código, dá pra ver o motivo: o `accept()` aparece só uma vez e está fora de um laço. Depois disso, o `while` fica tratando apenas as mensagens do primeiro cliente. O handshake do segundo cliente foi concluído pelo sistema operacional, e a conexão ficou parada na fila de pendentes do `ServerSocket` esperando um `accept()` que nunca veio — por isso ele imprime `Conectado` (do ponto de vista da rede ele está), mas a aplicação servidora nunca soube que ele existe. Conectado e atendido não são a mesma coisa.
+
+Para suportar vários clientes, o `accept()` teria que estar dentro de um laço e cada conexão aceita ser tratada em uma thread separada.
 
 ---
 
