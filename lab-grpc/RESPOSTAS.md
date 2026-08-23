@@ -149,7 +149,75 @@ tratamento de `StatusRuntimeException`/`RpcError` e ao expor deadlines.
 
 ## Parte B — Protocol Buffers e o contrato do serviço
 
-*(a responder)*
+#### 1. Qual a vantagem do contrato explícito e gerado automaticamente?
+
+No laboratório anterior o formato existia, mas só na cabeça de quem escreveu os dois
+lados. O cliente TCP mandava `hora` e o servidor comparava com a string `"hora"`; se
+alguém renomeasse para `horario` em um dos lados, nada acusaria o erro — o programa
+compilaria, subiria, e só na execução o servidor responderia "comando desconhecido".
+O contrato era verificado por conversa, e o custo de quebrá-lo aparecia tarde.
+
+Com o `central.proto`, três coisas mudam:
+
+- **Fonte única de verdade.** Existe um arquivo que define o que é uma
+  `PerguntaHorario`. Não há duas definições podendo divergir.
+- **Erro antecipado.** Se eu escrever `pergunta.getNome()` em vez de
+  `getNomeAluno()`, o build falha. O que antes era bug de execução vira erro de
+  compilação.
+- **O contrato é versionável.** Ele está no Git, tem histórico, e a numeração dos
+  campos (`= 1`, `= 2`) permite evoluir a mensagem sem quebrar quem já usa a versão
+  antiga — algo impossível com string posicional montada à mão.
+
+#### 2. O que o mesmo .proto gerando Java e Python sugere?
+
+Sugere que, num sistema distribuído real, **a fronteira entre equipes é o contrato, não
+a linguagem**. Cada time gera o stub na linguagem que preferir a partir do mesmo
+arquivo, e a interoperabilidade é consequência do processo, não de esforço de
+integração.
+
+O efeito prático mais forte é a substituibilidade: como o cliente conhece o serviço
+apenas pelo `.proto`, o servidor Python deste laboratório poderia ser reescrito em
+Java (ou Go, ou Rust) sem que uma linha do cliente mudasse. A linguagem vira detalhe
+de implementação — o que é uma forma de transparência de acesso em escala
+organizacional.
+
+#### 3. Onde ficam definidas as operações no código gerado?
+
+Consegui identificar nas duas linguagens, e o contraste entre elas é informativo.
+
+**Python** (`python/grpc_central/central_pb2_grpc.py`) — no construtor de
+`CentralAtendimentoStub`, cada operação vira um atributo:
+
+```python
+self.ConsultarHorario = channel.unary_unary(...)   # linha 37
+self.AcompanharAvisos = channel.unary_stream(...)  # linha 42
+```
+
+Os nomes `unary_unary` e `unary_stream` já revelam o estilo de cada RPC: uma
+resposta contra várias. Do lado servidor, `add_CentralAtendimentoServicer_to_server`
+monta o mesmo par com `grpc.unary_unary_rpc_method_handler` e
+`grpc.unary_stream_rpc_method_handler`.
+
+**Java** (`CentralAtendimentoGrpc.java`, gerado em `target/generated-sources/`) — as
+operações aparecem primeiro como `MethodDescriptor`, e depois como métodos da classe
+base que o servidor estende:
+
+```java
+SERVICE_NAME = "central.CentralAtendimento";                    // linha 15
+.setFullMethodName(generateFullMethodName(SERVICE_NAME, "ConsultarHorario"))  // linha 35
+public abstract static class CentralAtendimentoImplBase          // linha 152
+public void consultarHorario(...)                                // linha 181
+public void acompanharAvisos(...)                                // linha 192
+```
+
+Reconheci `CentralAtendimentoImplBase` — é exatamente a classe que o meu
+`ServidorCentral.CentralAtendimentoImpl` estende.
+
+Um detalhe que achei revelador: o método em Java se chama `consultarHorario`
+(minúsculo), seguindo a convenção da linguagem, mas o nome que trafega na rede
+continua sendo `central.CentralAtendimento/ConsultarHorario`. O gerador adapta o
+código ao estilo de cada linguagem sem mexer no contrato — que é justamente o motivo
+de Java e Python conseguirem conversar.
 
 ---
 
