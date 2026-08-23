@@ -13,3 +13,6 @@ venv/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Scripts auxiliares locais (nao fazem parte da entrega)
+_local/
