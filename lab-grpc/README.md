@@ -104,6 +104,8 @@ anterior, e detalho abaixo para que a divisão fique clara:
 - redação do `central.proto`, do `pom.xml` e dos quatro programas (servidor e cliente,
   em Java e em Python), a partir dos exemplos do roteiro, com o OFFSET pessoal aplicado;
 - scripts auxiliares de automação dos testes de observação;
+- organização do histórico de commits: divisão do trabalho por etapa e redação das
+  mensagens de commit;
 - primeira redação do `RESPOSTAS.md`, revisada e reescrita por mim.
 
 **Feito por mim:**
