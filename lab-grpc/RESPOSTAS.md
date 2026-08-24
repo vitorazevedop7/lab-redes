@@ -1,6 +1,7 @@
 # Respostas — Transparências em Sistemas Distribuídos e gRPC
 
 **Aluno:** Vitor Augusto Viana Azevedo — matrícula 892281 · Turma T1
+**Professor:** Cleiton Tavares Silva
 **Ambiente:** macOS 26.5.2 · Apple M4 · Java 21 · Maven 3.9.11 · Python 3.13 · OFFSET = 81
 **Portas:** gRPC Java `50132` · gRPC Python `50142`
 

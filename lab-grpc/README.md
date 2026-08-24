@@ -3,6 +3,7 @@
 **Disciplina:** (491101) Laboratório de Desenvolvimento de Aplicações Móveis e Distribuídas
 **Unidade:** U1 — Introdução ao Desenvolvimento de Aplicações Distribuídas
 **Aluno:** Vitor Augusto Viana Azevedo — matrícula 892281 · Turma T1
+**Professor:** Cleiton Tavares Silva
 **Modalidade:** individual
 
 ## Sobre o projeto
