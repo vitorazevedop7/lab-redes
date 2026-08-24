@@ -1,6 +1,7 @@
 # Respostas — Roteiro de Laboratório de Redes
 
 **Aluno:** Vitor Augusto Viana Azevedo — matrícula 892281 · Turma T1
+**Professor:** Cleiton Tavares Silva
 **Ambiente:** macOS 26.5.2 · Apple M4 · Java 21.0.9 · Python 3.13 · OFFSET = 81
 
 > As respostas abaixo referem-se ao comportamento observado ao executar os

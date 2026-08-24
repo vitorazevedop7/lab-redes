@@ -3,7 +3,7 @@
 **Disciplina:** (491101) Laboratório de Desenvolvimento de Aplicações Móveis e Distribuídas
 **Unidade:** U0 — Nivelamento de Redes de Computadores e Sistemas Operacionais
 **Aluno:** Vitor Augusto Viana Azevedo — matrícula 892281
-**Turma:** T1 · **Professor:** Cristiano de Macedo Neto
+**Turma:** T1 · **Professor:** Cleiton Tavares Silva
 **Modalidade:** individual
 
 ## Sobre o projeto
